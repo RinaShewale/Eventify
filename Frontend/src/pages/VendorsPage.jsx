@@ -138,7 +138,7 @@ export default function VendorsPage() {
             />
           </div>
           <Input
-            label="Contact Dossier"
+            label="Contact Details"
             placeholder="e.g. +91 98765 43210"
             value={form.contact}
             onChange={(e) => setForm({ ...form, contact: e.target.value })}

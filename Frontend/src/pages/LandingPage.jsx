@@ -6,7 +6,6 @@ import {
   Wallet, 
   Store, 
   ArrowRight, 
-  Star, 
   User as UserIcon, 
   LayoutDashboard, 
   LogOut,
@@ -183,9 +182,9 @@ export default function LandingPage({ isReady = true }) {
               <Sparkles className="w-4 h-4 text-[#D8B4A6]" />
             </div>
             <div>
-              <span className="font-serif text-2xl tracking-wide block leading-none font-normal">Événement</span>
+              <span className="font-serif text-2xl tracking-wide block leading-none font-normal">Eventify</span>
               <span className="text-[9px] uppercase tracking-[0.25em] text-[#4A1521]/60 font-semibold mt-0.5 block">
-                Private Maison
+                Plan events with confidence
               </span>
             </div>
           </Link>
@@ -223,7 +222,7 @@ export default function LandingPage({ isReady = true }) {
                         {user?.name || 'Valued Guest'}
                       </p>
                       <p className="text-[11px] text-[#4A1521]/60 truncate font-light mt-0.5">
-                        {user?.email || 'guest@maison.com'}
+                        {user?.email || 'Eventify account'}
                       </p>
                     </div>
 
@@ -330,9 +329,9 @@ export default function LandingPage({ isReady = true }) {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <p className="font-serif text-base text-[#4A1521] font-medium">AI Master Orchestration</p>
+              <p className="font-serif text-base text-[#4A1521] font-medium">Your Event Plan</p>
               <p className="text-[11px] text-[#4A1521]/70 font-light mt-0.5 leading-snug">
-                “Udaipur palace banquet mapped with 300 guests, royal brass lighting, and sitar transition.”
+                Keep your event ideas, schedule, and planning details organized in one place.
               </p>
             </div>
           </div>
@@ -353,23 +352,23 @@ export default function LandingPage({ isReady = true }) {
             {[
               {
                 icon: Sparkles,
-                title: 'Generative Blueprints',
-                desc: 'Instantly draft spatial themes, sensory audio palettes, and course menus with AI poise.',
+                title: 'AI Event Planning',
+                desc: 'Generate event concepts, schedules, checklists, and budget ideas from your event details.',
               },
               {
                 icon: Wallet,
-                title: 'Capital Allocation',
-                desc: 'Discipline every rupee across venue, floral decor, and hospitality with predictive accuracy.',
+                title: 'Budget Tracking',
+                desc: 'Set a budget and track planned costs across your event categories.',
               },
               {
                 icon: Store,
-                title: 'Private Vendor Vault',
-                desc: 'Catalog quotes, milestone balances, and vetted partners across Indian luxury destinations.',
+                title: 'Vendor Management',
+                desc: 'Keep vendor contact details, quotes, notes, and payment status together.',
               },
               {
                 icon: Calendar,
-                title: 'Run-of-Show Fidelity',
-                desc: 'Dynamic minute-by-minute schedules synchronized for key hosts, staff, and artisans.',
+                title: 'Event Checklists',
+                desc: 'Organize event tasks and track what is complete as your date approaches.',
               },
             ].map((f, i) => (
               <div
@@ -429,17 +428,14 @@ export default function LandingPage({ isReady = true }) {
       {/* Testimonials */}
       <section id="testimonials" className="py-28 bg-[#4A1521] text-[#FDFBF7] overflow-hidden">
         <div className="testimonial-content max-w-4xl mx-auto px-6 text-center">
-          <div className="flex justify-center text-[#D8B4A6] gap-1.5 mb-8">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-current" />
-            ))}
+          <div className="flex justify-center text-[#D8B4A6] mb-8">
+            <Sparkles className="w-6 h-6" />
           </div>
           <blockquote className="font-serif text-2xl sm:text-4xl italic font-light leading-relaxed mb-8">
-            “The AI spatial itinerary and budget predictions for our Udaipur palace gala were executed with such nuance that
-            our family was completely present for every second.”
+            “From the first idea to the final checklist, keep every part of your event plan clear and in one place.”
           </blockquote>
           <p className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#D8B4A6]">
-            Pooja &amp; Siddharth • Private Gala Hosts
+            Eventify • Plan, organize, celebrate
           </p>
         </div>
       </section>
@@ -448,13 +444,15 @@ export default function LandingPage({ isReady = true }) {
       <footer className="bg-[#FDFBF7] border-t border-[#EADFCF] py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-[#4A1521]/60">
           <div className="flex items-center gap-3">
-            <span className="font-serif text-lg text-[#4A1521] font-normal">Événement AI</span>
+            <span className="font-serif text-lg text-[#4A1521] font-normal">Eventify</span>
             <span>© {new Date().getFullYear()} All Rights Reserved.</span>
           </div>
           <div className="flex gap-8 tracking-wide">
-            <a href="#" className="hover:text-[#4A1521] transition-colors">Privacy Protocol</a>
-            <a href="#" className="hover:text-[#4A1521] transition-colors">Terms of Experience</a>
-            <a href="#" className="hover:text-[#4A1521] transition-colors">Concierge Desk</a>
+            <a href="#features" className="hover:text-[#4A1521] transition-colors">Features</a>
+            <a href="#workflow" className="hover:text-[#4A1521] transition-colors">How it works</a>
+            <Link to={isAuthenticated ? '/app' : '/login'} className="hover:text-[#4A1521] transition-colors">
+              {isAuthenticated ? 'Open dashboard' : 'Get started'}
+            </Link>
           </div>
         </div>
       </footer>

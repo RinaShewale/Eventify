@@ -1,6 +1,7 @@
 import { useState, memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/ui/Card';
+import EventCoverImage from '../components/ui/EventCoverImage';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Sparkles, Copy, Check, Layers, Compass, BookmarkPlus } from 'lucide-react';
@@ -126,7 +127,15 @@ const PlanNode = memo(function PlanNode({ label, value, depth = 0 }) {
 });
 
 // Memoized viewer for the entire plan output
-const PlanViewer = memo(function PlanViewer({ planData, cover, onSave, saving, saveError }) {
+const PlanViewer = memo(function PlanViewer({
+  planData,
+  eventImage,
+  cover,
+  onCoverChange,
+  onSave,
+  saving,
+  saveError,
+}) {
   const [activeTab, setActiveTab] = useState('blueprint');
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState('');
@@ -209,11 +218,14 @@ const PlanViewer = memo(function PlanViewer({ planData, cover, onSave, saving, s
       {saveError && <p role="alert" className="text-xs text-red-800">{saveError}</p>}
 
       <Card className="overflow-hidden p-0">
-        <img
+        <EventCoverImage
+          key={cover}
           src={cover}
+          event={eventImage}
           alt="AI-generated event concept"
-          className="h-56 w-full object-cover sm:h-72"
-          loading="eager"
+          className="h-56 w-full sm:h-72"
+          imageClassName="h-56 w-full object-cover sm:h-72"
+          onImageChange={onCoverChange}
         />
       </Card>
 
@@ -290,6 +302,7 @@ export default function AiPlannerPage() {
         title: content.plan?.eventOverview?.title || form.type,
         theme: form.theme,
         location: form.location,
+        imagePrompt: content.plan?.visualConcept?.imagePrompt,
       }, Date.now()));
     } catch (requestError) {
       setError(requestError.message || 'Unable to generate an event plan.');
@@ -336,7 +349,7 @@ export default function AiPlannerPage() {
         <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy flex items-center gap-3">
           <span>AI Event Architect</span>
           <span className="text-[10px] font-sans bg-sand text-burgundy border border-sand-dark px-3 py-1 rounded-full uppercase tracking-luxury font-semibold">
-            Atelier Engine
+            Eventify AI
           </span>
         </h1>
         <p className="text-xs text-burgundy/70 mt-1 font-light tracking-wide">
@@ -427,7 +440,15 @@ export default function AiPlannerPage() {
           {!loading && generatedPlan && (
             <PlanViewer
               planData={generatedPlan}
+              eventImage={{
+                type: form.type,
+                title: generatedPlan.plan?.eventOverview?.title || form.type,
+                theme: form.theme,
+                location: form.location,
+                imagePrompt: generatedPlan.plan?.visualConcept?.imagePrompt,
+              }}
               cover={generatedCover}
+              onCoverChange={setGeneratedCover}
               onSave={handleSavePlan}
               saving={saving}
               saveError={saveError}

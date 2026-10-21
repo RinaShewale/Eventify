@@ -20,9 +20,10 @@ import Badge from '../components/ui/Badge';
 import ProgressBar from '../components/ui/ProgressBar';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
+import EventCoverImage from '../components/ui/EventCoverImage';
 
 export default function DashboardPage() {
-  const { user, events, activeEvent, tasks, budgetCategories, vendors } = useEventContext();
+  const { user, events, activeEvent, tasks, budgetCategories, vendors, updateEventCover } = useEventContext();
   const pageRef = useRef(null);
 
   // Financial and Production Calculations
@@ -117,7 +118,7 @@ export default function DashboardPage() {
           </div>
           <p className="font-serif text-3xl text-[#4A1521] font-normal">{totalGuests}</p>
           <span className="text-[11px] text-[#4A1521]/60 font-light block mt-1">
-            Confirmed RSVPs &amp; VIPs
+            Guests across your events
           </span>
         </Card>
 
@@ -129,7 +130,7 @@ export default function DashboardPage() {
           </div>
           <p className="font-serif text-3xl text-[#4A1521] font-normal">{vendors.length}</p>
           <span className="text-[11px] text-emerald-800 font-medium block mt-1">
-            ● 100% Verified Partners
+            Vendors in your event list
           </span>
         </Card>
       </div>
@@ -167,10 +168,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between border-b border-[#EADFCF] pb-4">
             <div>
               <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#B87A68] block">
-                Production In Progress
+                {activeEvent ? 'Production In Progress' : 'Event Overview'}
               </span>
               <h3 className="font-serif text-2xl text-[#4A1521] mt-0.5">
-                {activeEvent?.title || 'Grand Palace Gala'}
+                {activeEvent?.title || 'No event selected'}
               </h3>
             </div>
             {activeEvent && (
@@ -187,10 +188,13 @@ export default function DashboardPage() {
           {/* Event Details Card */}
           {activeEvent && (
             <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center p-4 rounded-2xl bg-[#FAF7F2] border border-[#EADFCF]">
-              <img 
-                src={activeEvent.cover} 
-                alt={activeEvent.title} 
-                className="w-full sm:w-36 h-28 rounded-xl object-cover border border-[#EADFCF] shadow-sm" 
+              <EventCoverImage
+                key={`${activeEvent.id}-${activeEvent.cover}`}
+                event={activeEvent}
+                alt={activeEvent.title}
+                className="w-full sm:w-36 h-28 rounded-xl object-cover border border-[#EADFCF] shadow-sm"
+                imageClassName="w-full sm:w-36 h-28 rounded-xl object-cover border border-[#EADFCF] shadow-sm"
+                onImageChange={(cover) => updateEventCover(activeEvent.id, cover)}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">

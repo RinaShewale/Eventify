@@ -288,6 +288,13 @@ export function EventProvider({ children }) {
     addToast('Event removed from your account.', 'info');
   }, [addToast, events, selectedEventId, token]);
 
+  const updateEventCover = useCallback(async (id, cover) => {
+    if (!token) throw new Error('Sign in before updating an event image.');
+    const response = await eventApi.update(token, id, { cover });
+    const updated = normalizeEvent(response.event);
+    setEvents((current) => current.map((event) => (event.id === id ? { ...event, ...updated } : event)));
+  }, [token]);
+
   const addBudgetItem = useCallback(async (item) => {
     if (!token || !selectedEventId) throw new Error('Create or select an event before adding a budget allocation.');
     const allocation = {
@@ -392,6 +399,7 @@ export function EventProvider({ children }) {
     },
     createEvent,
     deleteEvent,
+    updateEventCover,
     budgetCategories: hasSelectedEventData ? budgetCategories : [],
     budgetRecord: hasSelectedEventData ? budgetRecord : null,
     addBudgetItem,
@@ -407,7 +415,7 @@ export function EventProvider({ children }) {
   }), [
     activeEvent, addBudgetItem, addToast, addVendor, authStatus, budgetCategories, budgetRecord,
     createEvent, dataLoading, deleteEvent, deleteVendor, events, hasSelectedEventData, removeToast,
-    selectedEventId, tasks, tasksEventId, toasts, toggleTask, user, vendors,
+    selectedEventId, tasks, tasksEventId, toasts, toggleTask, updateEventCover, user, vendors,
   ]);
 
   return <EventContext.Provider value={value}>{children}</EventContext.Provider>;

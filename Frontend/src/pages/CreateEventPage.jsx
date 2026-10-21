@@ -55,14 +55,14 @@ export default function CreateEventPage() {
         onClick={() => navigate(-1)} 
         className="flex items-center gap-2 text-xs font-semibold uppercase tracking-luxury text-burgundy/60 hover:text-burgundy transition-colors cursor-pointer"
       >
-        <ArrowLeft className="w-4 h-4" /> Return to Dossier
+        <ArrowLeft className="w-4 h-4" /> Back to Events
       </button>
 
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy font-normal">Initiate New Dossier</h1>
+          <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy font-normal">Create an Event</h1>
           <p className="text-xs text-burgundy/70 mt-1 font-light tracking-wide">
-            Calibrate your celebration parameters to begin intelligent orchestration.
+            Add the details to create an event workspace for your budget, vendors, and checklist.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function CreateEventPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {submitError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">{submitError}</p>}
           <Input
-            label="Event Designation"
+            label="Event Title"
             placeholder="e.g. Royal Jaipur Sangeet & Reception"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -91,7 +91,7 @@ export default function CreateEventPage() {
             />
             <Input
               type="date"
-              label="Calendar Date"
+              label="Event Date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               error={errors.date}
@@ -116,7 +116,7 @@ export default function CreateEventPage() {
             />
             <Input
               type="number"
-              label="Total Capital (₹ INR)"
+              label="Estimated Budget (₹ INR)"
               placeholder="e.g. 2500000"
               value={formData.totalBudget}
               onChange={(e) => setFormData({ ...formData, totalBudget: e.target.value })}
@@ -125,7 +125,7 @@ export default function CreateEventPage() {
 
           <div className="text-left space-y-1.5 font-sans">
             <label className="block text-[11px] font-medium tracking-luxury uppercase text-burgundy/70">
-              Aesthetic Vision & Tone
+              Event Style & Notes
             </label>
             <textarea
               rows={3}
@@ -138,7 +138,7 @@ export default function CreateEventPage() {
 
           <div className="pt-4 flex gap-3">
             <Button type="submit" size="md" loading={submitting} disabled={submitting}>
-              {submitting ? 'Saving Dossier...' : 'Create Dossier'}
+              {submitting ? 'Saving Event...' : 'Create Event'}
             </Button>
             <Button type="button" variant="ghost" onClick={() => navigate(-1)}>
               Discard

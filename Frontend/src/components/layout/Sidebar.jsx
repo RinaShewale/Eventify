@@ -61,10 +61,10 @@ export default function Sidebar() {
           </div>
           <div>
             <span className="font-serif text-2xl tracking-wide text-[#4A1521] block leading-none font-normal">
-              Événement
+              Eventify
             </span>
             <span className="text-[9px] uppercase tracking-[0.22em] text-[#4A1521]/60 font-semibold mt-1 block">
-              Private Concierge
+              Event planning
             </span>
           </div>
         </div>
@@ -124,15 +124,18 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Concierge Card */}
+      {/* Eventify assistant card */}
       <div className="relative overflow-hidden bg-white/70 backdrop-blur-md rounded-2xl p-4 text-center border border-[#EADFCF] shadow-sm">
-        <p className="font-serif text-base text-[#4A1521] font-medium">Maison Assistant</p>
+        <p className="font-serif text-base text-[#4A1521] font-medium">Eventify Assistant</p>
         <p className="text-[11px] text-[#4A1521]/70 mt-1 mb-3 leading-relaxed font-light">
-          Your itinerary and vendor allocations are harmonized.
+          Turn your event details into a practical plan with AI.
         </p>
-        <span className="inline-block text-[10px] text-[#4A1521] font-semibold tracking-[0.2em] uppercase border-b border-[#4A1521]/40 pb-0.5 hover:border-[#4A1521] transition-all cursor-pointer">
-          Inquire Now →
-        </span>
+        <NavLink
+          to="/app/ai-planner"
+          className="inline-block text-[10px] text-[#4A1521] font-semibold tracking-[0.2em] uppercase border-b border-[#4A1521]/40 pb-0.5 hover:border-[#4A1521] transition-all"
+        >
+          Open AI Planner →
+        </NavLink>
       </div>
     </aside>
   );

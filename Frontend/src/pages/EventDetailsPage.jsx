@@ -6,11 +6,12 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import ProgressBar from '../components/ui/ProgressBar';
 import { Calendar, MapPin, Users, Sparkles, Trash2 } from 'lucide-react';
+import EventCoverImage from '../components/ui/EventCoverImage';
 
 export default function EventDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { events, deleteEvent, setSelectedEventId } = useEventContext();
+  const { events, deleteEvent, setSelectedEventId, updateEventCover } = useEventContext();
 
   const [deleteError, setDeleteError] = useState('');
   const event = events.find((item) => item.id === id);
@@ -43,7 +44,14 @@ export default function EventDetailsPage() {
       {deleteError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">{deleteError}</p>}
       {/* Hero Cover Card */}
       <div className="relative rounded-3xl overflow-hidden h-80 shadow-luxury border border-sand/60">
-        <img src={event.cover} alt={event.title} className="w-full h-full object-cover filter brightness-[0.7]" />
+        <EventCoverImage
+          key={`${event.id}-${event.cover}`}
+          event={event}
+          alt={event.title}
+          className="h-full w-full"
+          imageClassName="h-full w-full object-cover brightness-[0.7]"
+          onImageChange={(cover) => updateEventCover(event.id, cover)}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-burgundy-dark/90 via-burgundy-dark/30 to-transparent" />
 
         <div className="absolute bottom-8 left-8 right-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 text-creme">

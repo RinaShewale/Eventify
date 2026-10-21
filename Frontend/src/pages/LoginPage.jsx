@@ -21,9 +21,9 @@ export default function LoginPage() {
           <Sparkles className="w-6 h-6 text-dustyPink" />
         </div>
 
-        <h2 className="font-editorial text-3xl text-burgundy mb-2">Private Access</h2>
+        <h2 className="font-editorial text-3xl text-burgundy mb-2">Welcome to Eventify</h2>
         <p className="text-xs text-burgundy/70 mb-8 font-light leading-relaxed">
-          Access your private dossier, artisan budgets, and celebration blueprints.
+          Sign in to manage your events, budgets, vendors, and planning checklists.
         </p>
 
         <button
@@ -50,7 +50,7 @@ export default function LoginPage() {
         )}
 
         <div className="mt-8 pt-6 border-t border-sand/40 text-[11px] text-burgundy/50 font-light">
-          By authentication, you accept the Maison Standards & Privacy Protocol.
+          By continuing, you agree to Eventify&apos;s terms and privacy policy.
         </div>
       </div>
     </div>

@@ -8,10 +8,12 @@ import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 
 export default function ProfilePage() {
-  const { user } = useEventContext();
+  const { user, events } = useEventContext();
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const [signOutError, setSignOutError] = useState('');
+  const activeEventsCount = events.filter((event) => ['Upcoming', 'Planning'].includes(event.status)).length;
+  const plannedGuests = events.reduce((total, event) => total + (Number(event.guests) || 0), 0);
 
   const handleSignOut = async () => {
     setSignOutError('');
@@ -26,7 +28,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 font-sans">
-      <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy">Host Dossier</h1>
+      <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy">Your Profile</h1>
 
       <Card className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left border border-sand/60">
         <img
@@ -57,12 +59,12 @@ export default function ProfilePage() {
         <h3 className="font-editorial text-2xl text-burgundy">Portfolio Statistics</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
           <div className="p-4 rounded-xl bg-creme-50/70 border border-sand/50">
-            <span className="text-[10px] text-burgundy/60 uppercase font-semibold tracking-luxury">Active Dossiers</span>
-            <p className="font-editorial text-2xl text-burgundy mt-1">4</p>
+            <span className="text-[10px] text-burgundy/60 uppercase font-semibold tracking-luxury">Active Events</span>
+            <p className="font-editorial text-2xl text-burgundy mt-1">{activeEventsCount}</p>
           </div>
           <div className="p-4 rounded-xl bg-creme-50/70 border border-sand/50">
-            <span className="text-[10px] text-burgundy/60 uppercase font-semibold tracking-luxury">AI Inquiries</span>
-            <p className="font-editorial text-2xl text-burgundy mt-1">128</p>
+            <span className="text-[10px] text-burgundy/60 uppercase font-semibold tracking-luxury">Planned Guests</span>
+            <p className="font-editorial text-2xl text-burgundy mt-1">{plannedGuests}</p>
           </div>
           <div className="p-4 rounded-xl bg-creme-50/70 border border-sand/50 col-span-2 sm:col-span-1">
             <span className="text-[10px] text-burgundy/60 uppercase font-semibold tracking-luxury">Authentication</span>

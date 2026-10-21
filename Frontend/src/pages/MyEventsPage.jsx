@@ -4,9 +4,10 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { Plus, MapPin, Users, Calendar } from 'lucide-react';
+import EventCoverImage from '../components/ui/EventCoverImage';
 
 export default function MyEventsPage() {
-  const { events, setSelectedEventId } = useEventContext();
+  const { events, setSelectedEventId, updateEventCover } = useEventContext();
 
   return (
     <div className="space-y-6">
@@ -24,7 +25,14 @@ export default function MyEventsPage() {
         {events.map((ev) => (
           <Card key={ev.id} hover className="flex flex-col justify-between overflow-hidden p-0">
             <div className="h-44 w-full relative">
-              <img src={ev.cover} alt={ev.title} className="w-full h-full object-cover" />
+              <EventCoverImage
+                key={`${ev.id}-${ev.cover}`}
+                event={ev}
+                alt={ev.title}
+                className="h-full w-full"
+                imageClassName="h-full w-full object-cover"
+                onImageChange={(cover) => updateEventCover(ev.id, cover)}
+              />
               <div className="absolute top-3 right-3">
                 <Badge variant="coral">{ev.status}</Badge>
               </div>
