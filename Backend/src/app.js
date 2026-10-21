@@ -1,3 +1,4 @@
+// Backend/src/app.js
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -5,7 +6,6 @@ import cookieParser from "cookie-parser";
 import passport from "./config/passport.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { existsSync } from "fs";
 
 import authRoutes from "./routes/auth.routes.js";
 import eventRoutes from "./routes/event.routes.js";
@@ -17,18 +17,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const distPath = path.join(__dirname, "../../Frontend/dist");
-const frontendPath = path.join(distPath, "index.html");
-const frontendOrigins = [
-  "http://localhost:5173",
-].filter(Boolean);
 
 // ======================
 // MIDDLEWARES
 // ======================
 app.use(cors({
-  origin: frontendOrigins,
-  credentials: true,
+  origin: [
+  
+    "http://localhost:5173",
+  ],
+  credentials: true
 }));
 
 app.use(express.json());
@@ -36,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(passport.initialize());
+
 
 // ======================
 // ROUTES
@@ -49,41 +48,22 @@ app.use("/api/ai", aiRoutes);
 // ======================
 // HEALTH CHECK
 // ======================
-const healthCheck = (req, res) => {
-  const frontendAvailable = existsSync(frontendPath);
-  res.status(frontendAvailable ? 200 : 503).json({
-    success: frontendAvailable,
-    status: frontendAvailable ? "ok" : "unavailable",
-    message: frontendAvailable
-      ? "Eventify is ready"
-      : "Frontend build is missing. Build Frontend/dist before starting the server.",
-    timestamp: new Date().toISOString(),
-  });
-};
-
-app.get("/health", healthCheck);
-app.get("/api/health", healthCheck);
-
-app.use("/api", (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "API route not found",
-  });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // ======================
-// FRONTEND SERVE
+// FRONTEND SERVE (FIXED)
 // ======================
+
+const distPath = path.join(__dirname, "../../Frontend/dist");
+
 app.use(express.static(distPath));
 
-app.get("/{*path}", (req, res, next) => {
-  if (!req.accepts("html")) {
-    return next();
-  }
-
-  res.sendFile(frontendPath, (error) => {
-    if (error) next(error);
-  });
+// ✅ IMPORTANT FIX HERE
+app.get("*name", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
+// ======================
 export default app;
