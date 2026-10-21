@@ -1,4 +1,4 @@
-const defaultApiBaseUrl = import.meta.env.DEV ? 'http://localhost:3000/api' : '/api';
+const defaultApiBaseUrl = import.meta.env.DEV ? 'https://eventify-cq56.onrender.com/api' : '/api';
 const apiBaseUrl = (import.meta.env.VITE_API_URL || defaultApiBaseUrl).replace(/\/$/, '');
 
 export function getApiUrl(path = '') {
