@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon server.js",
     "build": "npm ci --prefix ../Frontend && npm run build --prefix ../Frontend",
+    "postinstall": "npm run build",
     "start": "node server.js"
   },
   "keywords": [],
