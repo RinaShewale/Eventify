@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: eventify
+    runtime: node
+    plan: free
+    buildCommand: npm ci --prefix Backend && npm ci --prefix Frontend && npm run build --prefix Frontend
+    startCommand: npm start --prefix Backend
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false

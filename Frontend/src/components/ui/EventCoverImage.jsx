@@ -10,7 +10,11 @@ export default function EventCoverImage({
   imageClassName = '',
   onImageChange,
 }) {
-  const [imageSrc, setImageSrc] = useState(src || event?.cover || createEventCoverUrl(event || {}));
+  const fallbackSrc = createEventCoverUrl(event || {});
+  const requestedSrc = src || event?.cover;
+  const [imageSrc, setImageSrc] = useState(
+    requestedSrc && !requestedSrc.includes('pollinations.ai') ? requestedSrc : fallbackSrc
+  );
   const [failed, setFailed] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
@@ -31,17 +35,21 @@ export default function EventCoverImage({
 
   if (failed) {
     return (
-      <div className={`flex flex-col items-center justify-center gap-2 bg-sand/30 p-4 text-center ${className}`}>
-        <p className="text-xs text-burgundy/70">The image service refused this prompt or is temporarily rate-limited.</p>
-        <button
-          type="button"
-          onClick={retryImage}
-          disabled={retrying}
-          className="inline-flex items-center gap-1.5 rounded-full border border-sand-dark bg-creme-50 px-3 py-1.5 text-[11px] font-medium text-burgundy disabled:opacity-60"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${retrying ? 'animate-spin' : ''}`} />
-          {retrying ? 'Retrying...' : 'Try another image'}
-        </button>
+      <div className={`relative overflow-hidden bg-gradient-to-br from-[#4A1521] via-[#7A3B45] to-[#D8B4A6] ${className}`}>
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url("${fallbackSrc}")`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        <div className="absolute inset-0 flex items-end justify-between p-4">
+          <span className="max-w-[75%] truncate text-sm font-medium text-white drop-shadow">{event?.title || event?.type || 'Event'}</span>
+          <button
+            type="button"
+            onClick={retryImage}
+            disabled={retrying}
+            aria-label="Try another event cover"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-black/20 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur disabled:opacity-60"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${retrying ? 'animate-spin' : ''}`} />
+            {retrying ? 'Updating...' : 'Change cover'}
+          </button>
+        </div>
       </div>
     );
   }
@@ -51,7 +59,13 @@ export default function EventCoverImage({
       src={imageSrc}
       alt={alt || event?.title || 'Event cover'}
       className={imageClassName || className}
-      onError={() => setFailed(true)}
+      onError={() => {
+        if (imageSrc !== fallbackSrc) {
+          setImageSrc(fallbackSrc);
+          return;
+        }
+        setFailed(true);
+      }}
     />
   );
 }

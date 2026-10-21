@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import EventifyLoader from './components/loding/EventifyLoader';
@@ -10,7 +10,19 @@ import { store } from './redux/store';
 function AppContent() {
   const { restoreSession } = useAuth();
   const [showStartupLoader, setShowStartupLoader] = useState(true);
-  const handleLoaderComplete = useCallback(() => setShowStartupLoader(false), []);
+  const landingIntroTimelineRef = useRef(null);
+  const startupCompleteRef = useRef(false);
+
+  const registerLandingIntroTimeline = useCallback((timeline) => {
+    landingIntroTimelineRef.current = timeline;
+    if (startupCompleteRef.current) timeline.play();
+  }, []);
+
+  const handleLoaderComplete = useCallback(() => {
+    startupCompleteRef.current = true;
+    landingIntroTimelineRef.current?.play();
+    setShowStartupLoader(false);
+  }, []);
 
   useEffect(() => {
     restoreSession();
@@ -20,7 +32,10 @@ function AppContent() {
     <>
     
         <EventProvider>
-          <AppRouter />
+          <AppRouter
+            isLandingReady={!showStartupLoader}
+            onLandingTimelineReady={registerLandingIntroTimeline}
+          />
         </EventProvider>
     
       {showStartupLoader && <EventifyLoader onComplete={handleLoaderComplete} />}

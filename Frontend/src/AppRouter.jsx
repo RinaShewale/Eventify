@@ -78,11 +78,19 @@ function NotFound() {
   return <Navigate to="/" replace />;
 }
 
-export default function AppRouter() {
+export default function AppRouter({ isLandingReady = false, onLandingTimelineReady }) {
   return (
     <Suspense fallback={<RouteLoader />}>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={
+            <LandingPage
+              isReady={isLandingReady}
+              onIntroTimelineReady={onLandingTimelineReady}
+            />
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<GoogleAuthCallback />} />
         <Route path="/app" element={<ProtectedApp />}>

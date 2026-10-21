@@ -1,4 +1,5 @@
-const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
+const defaultApiBaseUrl = import.meta.env.DEV ? 'http://localhost:3000/api' : '/api';
+const apiBaseUrl = (import.meta.env.VITE_API_URL || defaultApiBaseUrl).replace(/\/$/, '');
 
 export function getApiUrl(path = '') {
   return `${apiBaseUrl}${path}`;

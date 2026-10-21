@@ -6,8 +6,15 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
-connectDB();
+async function startServer() {
+  await connectDB();
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Eventify server listening on port ${PORT}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Server startup failed:", error);
+  process.exit(1);
 });

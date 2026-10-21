@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import Topbar from './Topbar';
+import TopBar from './TopBar';
 import MobileNav from './MobileNav';
 import Toast from '../ui/Toast';
 import gsap from 'gsap';
@@ -32,7 +32,7 @@ export default function DashboardLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 pb-24 lg:pb-0 relative z-10">
-        <Topbar />
+        <TopBar />
         <main ref={mainRef} className="flex-1 p-5 md:p-10 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>

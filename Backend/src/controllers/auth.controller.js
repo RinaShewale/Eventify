@@ -43,7 +43,11 @@ export const googleCallback = async (req, res) => {
       }
     );
 
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    const frontendUrl = (
+      process.env.FRONTEND_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      "http://localhost:5173"
+    ).replace(/\/$/, "");
     res.redirect(`${frontendUrl}/auth/callback#token=${encodeURIComponent(token)}`);
   } catch (error) {
     console.error("Google Callback Error:", error);
