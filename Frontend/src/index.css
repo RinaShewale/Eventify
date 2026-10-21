@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #EEE4DA;
+    color: #4D0E13;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  ::selection {
+    background-color: #4D0E13;
+    color: #EEE4DA;
+  }
+
+  /* Luxury Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #EEE4DA;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C8A49F;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4D0E13;
+  }
+}
+
+@layer utilities {
+  /* Warm Creme Glass Card */
+  .glass-card {
+    background: rgba(238, 228, 218, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(216, 196, 172, 0.45);
+  }
+
+  /* Deep Sand Glass Panel */
+  .glass-panel {
+    background: rgba(216, 196, 172, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(200, 164, 159, 0.35);
+  }
+
+  /* Ultra-smooth interactive transitions */
+  .transition-luxury {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
