@@ -8,7 +8,9 @@ export const createEvent = async (req, res) => {
       date,
       location,
       guestCount,
-      description
+      description,
+      cover,
+      aiPlan
     } = req.body;
 
     if (!title || !eventType || !date || !guestCount) {
@@ -25,7 +27,9 @@ export const createEvent = async (req, res) => {
       date,
       location,
       guestCount,
-      description
+      description,
+      cover,
+      aiPlan
     });
 
     res.status(201).json({
@@ -88,6 +92,79 @@ export const getEventById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch event"
+    });
+  }
+};
+
+export const getEventChecklist = async (req, res) => {
+  try {
+    const event = await Event.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    }).select("checklist");
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      checklist: event.checklist
+    });
+  } catch (error) {
+    console.error("Get Event Checklist Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch event checklist"
+    });
+  }
+};
+
+export const updateEventChecklist = async (req, res) => {
+  try {
+    if (!Array.isArray(req.body.checklist)) {
+      return res.status(400).json({
+        success: false,
+        message: "Checklist must be an array"
+      });
+    }
+
+    const checklist = req.body.checklist.map((task) => ({
+      title: task.title,
+      category: task.category,
+      priority: task.priority,
+      timing: task.timing,
+      completed: task.completed
+    }));
+
+    const event = await Event.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { $set: { checklist } },
+      { new: true, runValidators: true, select: "checklist" }
+    );
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Event checklist updated",
+      checklist: event.checklist
+    });
+  } catch (error) {
+    console.error("Update Event Checklist Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update event checklist"
     });
   }
 };

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { useEventContext } from '../../context/EventContext';
+import { useRef } from 'react';
+import { useEventContext } from '../../hooks/useEventContext';
 import { Calendar, Bell, Sparkles, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';

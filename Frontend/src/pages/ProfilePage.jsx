@@ -1,14 +1,28 @@
-import React from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useEventContext } from '../hooks/useEventContext';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { LogOut, ShieldCheck, Mail } from 'lucide-react';
+import { useState } from 'react';
+import useAuth from '../hooks/useAuth';
 
 export default function ProfilePage() {
   const { user } = useEventContext();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
+  const [signOutError, setSignOutError] = useState('');
+
+  const handleSignOut = async () => {
+    setSignOutError('');
+    try {
+      await signOut().unwrap();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setSignOutError(typeof error === 'string' ? error : error.message);
+      navigate('/login', { replace: true });
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 font-sans">
@@ -31,10 +45,11 @@ export default function ProfilePage() {
           </p>
 
           <div className="flex justify-center sm:justify-start gap-3">
-            <Button size="sm" variant="outline" icon={LogOut} onClick={() => navigate('/login')}>
+            <Button size="sm" variant="outline" icon={LogOut} onClick={handleSignOut}>
               Sign Out
             </Button>
           </div>
+          {signOutError && <p role="alert" className="mt-3 text-xs text-red-800">{signOutError}</p>}
         </div>
       </Card>
 

@@ -3,7 +3,9 @@ import {
   createEvent,
   getEvents,
   getEventById,
+  getEventChecklist,
   updateEvent,
+  updateEventChecklist,
   deleteEvent
 } from "../controllers/event.controller.js";
 import protect from "../middleware/auth.middleware.js";
@@ -15,6 +17,10 @@ router.use(protect);
 router.post("/", createEvent);
 
 router.get("/", getEvents);
+
+router.get("/:id/checklist", getEventChecklist);
+
+router.put("/:id/checklist", updateEventChecklist);
 
 router.get("/:id", getEventById);
 

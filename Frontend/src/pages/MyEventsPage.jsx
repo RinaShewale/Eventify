@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useEventContext } from '../hooks/useEventContext';
 import { Link } from 'react-router-dom';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, CalendarDays, Sparkles, CheckSquare, Plus } from 'lucide-react';
 

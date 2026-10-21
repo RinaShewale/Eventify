@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useEventContext } from '../hooks/useEventContext';
 import { 
   Sparkles, 
   CalendarDays, 

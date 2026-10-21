@@ -1,17 +1,51 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Calendar, Wallet, Store, ArrowRight, Star, ChevronRight } from 'lucide-react';
+import { 
+  Sparkles, 
+  Calendar, 
+  Wallet, 
+  Store, 
+  ArrowRight, 
+  Star, 
+  User as UserIcon, 
+  LayoutDashboard, 
+  LogOut,
+  ChevronDown
+} from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import useAuth from '../hooks/useAuth';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function LandingPage() {
+export default function LandingPage({ isReady = true }) {
   const mainRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { status, user, logout } = useAuth();
+  const isAuthenticated = status === 'authenticated';
 
+  // Close dropdown on outside click
   useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  // GSAP Animations
+  useEffect(() => {
+    if (!isReady) return;
+
     const ctx = gsap.context(() => {
-      // 1. Initial quick entrance for immediate visual gratification
       const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
       introTl
         .fromTo('.hero-badge', { y: -15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 })
@@ -19,7 +53,6 @@ export default function LandingPage() {
         .fromTo('.hero-desc', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, '-=0.4')
         .fromTo('.hero-cta-group', { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, '-=0.4');
 
-      // 2. Scroll-Linked Hero Parallax & Fade Out
       gsap.to('.hero-text-container', {
         y: -70,
         opacity: 0,
@@ -32,7 +65,6 @@ export default function LandingPage() {
         },
       });
 
-      // Showcase Image Parallax & Scale
       gsap.fromTo(
         '.hero-showcase-img',
         { yPercent: -8, scale: 1.08 },
@@ -49,7 +81,6 @@ export default function LandingPage() {
         }
       );
 
-      // Floating Info Card Parallax within Hero
       gsap.to('.hero-floating-card', {
         y: -30,
         ease: 'none',
@@ -61,7 +92,6 @@ export default function LandingPage() {
         },
       });
 
-      // 3. Section Titles Reveal on Scroll
       gsap.utils.toArray('.reveal-heading').forEach((heading) => {
         gsap.fromTo(
           heading,
@@ -80,7 +110,6 @@ export default function LandingPage() {
         );
       });
 
-      // 4. Feature Cards: Staggered Scroll-Driven Float Up
       gsap.fromTo(
         '.feature-card',
         { y: 80, opacity: 0, scale: 0.96 },
@@ -99,9 +128,7 @@ export default function LandingPage() {
         }
       );
 
-      // 5. Three Acts: Sequential Unveiling
-      const steps = gsap.utils.toArray('.step-card');
-      steps.forEach((card, index) => {
+      gsap.utils.toArray('.step-card').forEach((card) => {
         gsap.fromTo(
           card,
           { y: 60, opacity: 0, filter: 'blur(4px)' },
@@ -120,7 +147,6 @@ export default function LandingPage() {
         );
       });
 
-      // 6. Testimonial Scroll Scale & Illumination
       gsap.fromTo(
         '.testimonial-content',
         { scale: 0.92, opacity: 0.3, y: 50 },
@@ -138,22 +164,21 @@ export default function LandingPage() {
         }
       );
 
-      // Recalculate heights cleanly after render
       ScrollTrigger.refresh();
     }, mainRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isReady]);
 
   return (
     <div
       ref={mainRef}
       className="min-h-screen bg-[#FDFBF7] text-[#4A1521] selection:bg-[#4A1521] selection:text-[#FDFBF7] overflow-x-hidden font-sans"
     >
-      {/* Sticky Glass Navigation */}
+      {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-[#FDFBF7]/85 border-b border-[#EADFCF] transition-all">
         <nav className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3.5 group cursor-pointer">
+          <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
             <div className="w-10 h-10 rounded-2xl bg-[#4A1521] flex items-center justify-center text-[#FDFBF7] shadow-sm">
               <Sparkles className="w-4 h-4 text-[#D8B4A6]" />
             </div>
@@ -163,22 +188,89 @@ export default function LandingPage() {
                 Private Maison
               </span>
             </div>
-          </div>
+          </Link>
 
+          {/* Auth section */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link
-              to="/login"
-              className="text-[11px] uppercase tracking-[0.2em] font-medium text-[#4A1521]/75 hover:text-[#4A1521] transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/app"
-              className="group relative inline-flex items-center justify-center px-5 py-2.5 rounded-full text-[11px] font-medium tracking-[0.18em] uppercase text-[#FDFBF7] bg-[#4A1521] hover:bg-[#340c15] transition-all duration-300 shadow-sm active:scale-[0.98]"
-            >
-              <span>Enter Atelier</span>
-              <ChevronRight className="w-3.5 h-3.5 ml-1 opacity-70 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            {isAuthenticated ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  className="inline-flex items-center gap-2 rounded-full border border-[#EADFCF] bg-white p-1 pr-3 text-[#4A1521] shadow-sm transition hover:border-[#D8B4A6] hover:shadow-md focus:outline-none"
+                  aria-expanded={isDropdownOpen}
+                >
+                  <img
+                    src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                    alt={user?.name || 'User Avatar'}
+                    className="h-8 w-8 rounded-full border border-[#EADFCF] object-cover"
+                  />
+                  <span className="text-[12px] font-medium hidden sm:inline">
+                    {user?.name || 'Account'}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-[#4A1521]/60 transition-transform duration-200 ${
+                      isDropdownOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Dropdown Popup Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2.5 w-60 rounded-2xl bg-[#FDFBF7] border border-[#EADFCF] shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-4 py-2.5 border-b border-[#EADFCF]/70">
+                      <p className="text-xs font-semibold text-[#4A1521] truncate">
+                        {user?.name || 'Valued Guest'}
+                      </p>
+                      <p className="text-[11px] text-[#4A1521]/60 truncate font-light mt-0.5">
+                        {user?.email || 'guest@maison.com'}
+                      </p>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        to="/app"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs text-[#4A1521] hover:bg-[#F3ECE1] transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-[#B87A68]" />
+                        <span>Dashboard</span>
+                      </Link>
+
+                      <Link
+                        to="/app/profile"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs text-[#4A1521] hover:bg-[#F3ECE1] transition-colors"
+                      >
+                        <UserIcon className="w-4 h-4 text-[#B87A68]" />
+                        <span>Profile &amp; Settings</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-[#EADFCF]/70 pt-1 mt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          if (logout) logout();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-red-700 hover:bg-red-50 transition-colors text-left"
+                      >
+                        <LogOut className="w-4 h-4 text-red-600" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-5 py-2 rounded-full border border-[#4A1521] text-[11px] uppercase tracking-[0.2em] font-medium text-[#4A1521] hover:bg-[#4A1521] hover:text-[#FDFBF7] transition-all duration-200"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </nav>
       </header>
@@ -186,13 +278,11 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="hero-section max-w-6xl mx-auto px-6 pt-16 pb-24 text-center">
         <div className="hero-text-container">
-          {/* Badge */}
           <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3ECE1] border border-[#E0D3C1] text-[#4A1521] text-[10px] font-semibold uppercase tracking-[0.22em] mb-8">
             <Sparkles className="w-3.5 h-3.5 text-[#B87A68]" />
             <span>Autonomous Luxury Event Orchestration</span>
           </div>
 
-          {/* Headings */}
           <div className="mb-7">
             <h1 className="hero-title-line font-serif text-5xl sm:text-7xl md:text-8xl font-normal tracking-tight text-[#4A1521] leading-[1.05]">
               The Art of
@@ -202,13 +292,11 @@ export default function LandingPage() {
             </h1>
           </div>
 
-          {/* Subtitle */}
           <p className="hero-desc max-w-2xl mx-auto text-sm sm:text-base text-[#4A1521]/75 font-light leading-relaxed mb-9">
             Synthesize full spatial concepts, precision INR budget allocations, and bespoke run-of-show schedules designed
             with the exact poise of luxury event directors.
           </p>
 
-          {/* Buttons */}
           <div className="hero-cta-group flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/app"
@@ -227,7 +315,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Showcase Image with Parallax Mask */}
+        {/* Showcase Image */}
         <div className="hero-showcase mt-16 relative rounded-3xl overflow-hidden border border-[#EADFCF] p-3 sm:p-4 bg-white/80 backdrop-blur shadow-md">
           <div className="rounded-2xl overflow-hidden border border-[#EADFCF] bg-[#FAF7F2] h-80 sm:h-[480px] relative">
             <img
@@ -251,7 +339,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Feature Section */}
+      {/* Features Grid */}
       <section id="features" className="py-24 bg-[#F8F4EC] border-y border-[#EADFCF]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="reveal-heading text-center max-w-xl mx-auto mb-16">
@@ -299,7 +387,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 3-Step Methodology */}
+      {/* Methodology */}
       <section id="workflow" className="py-28 max-w-6xl mx-auto px-6 text-center">
         <div className="reveal-heading">
           <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#4A1521]/60">Methodology</span>
@@ -364,15 +452,9 @@ export default function LandingPage() {
             <span>© {new Date().getFullYear()} All Rights Reserved.</span>
           </div>
           <div className="flex gap-8 tracking-wide">
-            <a href="#" className="hover:text-[#4A1521] transition-colors">
-              Privacy Protocol
-            </a>
-            <a href="#" className="hover:text-[#4A1521] transition-colors">
-              Terms of Experience
-            </a>
-            <a href="#" className="hover:text-[#4A1521] transition-colors">
-              Concierge Desk
-            </a>
+            <a href="#" className="hover:text-[#4A1521] transition-colors">Privacy Protocol</a>
+            <a href="#" className="hover:text-[#4A1521] transition-colors">Terms of Experience</a>
+            <a href="#" className="hover:text-[#4A1521] transition-colors">Concierge Desk</a>
           </div>
         </div>
       </footer>

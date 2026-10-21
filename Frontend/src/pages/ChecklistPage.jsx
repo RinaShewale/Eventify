@@ -1,24 +1,31 @@
-import React from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useEventContext } from '../hooks/useEventContext';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import ProgressBar from '../components/ui/ProgressBar';
 import { Clock } from 'lucide-react';
 
 export default function ChecklistPage() {
-  const { tasks, toggleTask } = useEventContext();
+  const { tasks, toggleTask, activeEvent, events, dataLoading } = useEventContext();
 
   const completedCount = tasks.filter((t) => t.completed).length;
-  const progressPercent = Math.round((completedCount / tasks.length) * 100);
+  const progressPercent = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 font-sans">
       <div>
         <h1 className="font-editorial text-3xl sm:text-4xl text-burgundy">Run-of-Show Protocol</h1>
         <p className="text-xs text-burgundy/70 mt-1 font-light tracking-wide">
-          Ensure total fidelity across hospitality, decor, and acoustic milestones.
+          {activeEvent.id
+            ? `Checklist for ${activeEvent.title}. Tasks and progress are saved to this event.`
+            : 'Select or create an event to view its checklist.'}
         </p>
       </div>
+
+      {!dataLoading && !events.length && (
+        <Card className="py-8 text-center text-sm text-burgundy/70">
+          Create an event first to start its checklist.
+        </Card>
+      )}
 
       {/* Progress Card */}
       <Card>
@@ -30,7 +37,12 @@ export default function ChecklistPage() {
       </Card>
 
       {/* Task List */}
-      <div className="space-y-3">
+      <div className="space-y-3" aria-busy={Boolean(activeEvent.id && !tasks.length)}>
+        {activeEvent.id && !tasks.length && (
+          <Card className="py-8 text-center text-sm text-burgundy/70">
+            Loading this event's checklist...
+          </Card>
+        )}
         {tasks.map((task) => (
           <Card
             key={task.id}
@@ -43,7 +55,8 @@ export default function ChecklistPage() {
               <input
                 type="checkbox"
                 checked={task.completed}
-                onChange={() => {}}
+                onClick={(event) => event.stopPropagation()}
+                onChange={() => toggleTask(task.id)}
                 className="w-4 h-4 accent-burgundy cursor-pointer"
               />
               <div>

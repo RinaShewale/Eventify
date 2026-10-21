@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEventContext } from '../context/EventContext';
+import { useEventContext } from '../hooks/useEventContext';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
-import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import { Sparkles, ArrowLeft } from 'lucide-react';
 
@@ -22,6 +21,8 @@ export default function CreateEventPage() {
   });
 
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const validate = () => {
     const errs = {};
@@ -33,11 +34,19 @@ export default function CreateEventPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const newId = createEvent(formData);
-    navigate(`/app/events/${newId}`);
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const newId = await createEvent(formData);
+      navigate(`/app/events/${newId}`);
+    } catch (error) {
+      setSubmitError(error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -64,6 +73,7 @@ export default function CreateEventPage() {
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-5">
+          {submitError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">{submitError}</p>}
           <Input
             label="Event Designation"
             placeholder="e.g. Royal Jaipur Sangeet & Reception"
@@ -73,11 +83,11 @@ export default function CreateEventPage() {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Select
-              label="Celebration Tier"
+            <Input
+              label="Event Type"
+              placeholder="e.g. Graduation, baby shower, product launch"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              options={['Wedding Celebration', 'Corporate Gala', 'Birthday Celebration', 'Private Dinner']}
             />
             <Input
               type="date"
@@ -127,8 +137,8 @@ export default function CreateEventPage() {
           </div>
 
           <div className="pt-4 flex gap-3">
-            <Button type="submit" size="md">
-              Create Dossier
+            <Button type="submit" size="md" loading={submitting} disabled={submitting}>
+              {submitting ? 'Saving Dossier...' : 'Create Dossier'}
             </Button>
             <Button type="button" variant="ghost" onClick={() => navigate(-1)}>
               Discard

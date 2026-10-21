@@ -43,6 +43,28 @@ const eventSchema = new mongoose.Schema(
       default: ""
     },
 
+    cover: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+
+    aiPlan: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null
+    },
+
+    checklist: {
+      type: [{
+        title: { type: String, required: true, trim: true },
+        category: { type: String, default: "General", trim: true },
+        priority: { type: String, default: "Medium", trim: true },
+        timing: { type: String, default: "As scheduled", trim: true },
+        completed: { type: Boolean, default: false }
+      }],
+      default: []
+    },
+
     status: {
       type: String,
       enum: ["planning", "completed", "cancelled"],

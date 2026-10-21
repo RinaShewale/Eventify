@@ -1,9 +1,15 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import useAuth from '../hooks/useAuth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { status, error, clearError, startGoogleLogin } = useAuth();
+
+  useEffect(() => {
+    if (status === 'authenticated') navigate('/app', { replace: true });
+  }, [navigate, status]);
 
   return (
     <div className="min-h-screen bg-creme-100 flex items-center justify-center p-6 relative overflow-hidden font-sans">
@@ -21,7 +27,12 @@ export default function LoginPage() {
         </p>
 
         <button
-          onClick={() => navigate('/app')}
+          type="button"
+          onClick={() => {
+            clearError();
+            startGoogleLogin();
+          }}
+          disabled={status === 'checking'}
           className="w-full flex items-center justify-center gap-3 bg-creme-50/90 hover:bg-creme text-burgundy border border-sand hover:border-burgundy rounded-full py-3.5 px-5 text-xs font-semibold tracking-wide shadow-sm transition-all duration-300 cursor-pointer"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -32,6 +43,11 @@ export default function LoginPage() {
           </svg>
           <span>Continue with Google</span>
         </button>
+        {error && (
+          <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">
+            {error}
+          </p>
+        )}
 
         <div className="mt-8 pt-6 border-t border-sand/40 text-[11px] text-burgundy/50 font-light">
           By authentication, you accept the Maison Standards & Privacy Protocol.

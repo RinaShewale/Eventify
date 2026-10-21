@@ -33,7 +33,14 @@ export const generateAIEventPlan = async (req, res) => {
     });
 
     // Step 2: Mistral creates the detailed final plan
-    const finalPlan = await generateEventPlan(blueprint);
+    const finalPlan = await generateEventPlan(blueprint, {
+      eventType,
+      budget,
+      guestCount,
+      location,
+      date,
+      description
+    });
 
     res.status(200).json({
       success: true,

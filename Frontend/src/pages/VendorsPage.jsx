@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useState } from 'react';
+import { useEventContext } from '../hooks/useEventContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -9,21 +9,31 @@ import Select from '../components/ui/Select';
 import { Plus, Phone, Trash2 } from 'lucide-react';
 
 export default function VendorsPage() {
-  const { vendors, addVendor, deleteVendor } = useEventContext();
+  const { vendors, addVendor, deleteVendor, activeEvent, events } = useEventContext();
   const [filter, setFilter] = useState('All');
   const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', category: 'Catering', contact: '', quote: '', status: 'Pending', notes: '' });
 
   const categories = ['All', 'Venue', 'Catering', 'Photography', 'Decoration', 'Music'];
 
   const filtered = filter === 'All' ? vendors : vendors.filter((v) => v.category === filter);
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!form.name) return;
-    addVendor({ ...form, quote: Number(form.quote) || 0 });
-    setForm({ name: '', category: 'Catering', contact: '', quote: '', status: 'Pending', notes: '' });
-    setModalOpen(false);
+    setSaving(true);
+    setError('');
+    try {
+      await addVendor({ ...form, quote: Number(form.quote) || 0 });
+      setForm({ name: '', category: 'Catering', contact: '', quote: '', status: 'Pending', notes: '' });
+      setModalOpen(false);
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -35,8 +45,12 @@ export default function VendorsPage() {
             Verified partners, contract milestones, and quotes.
           </p>
         </div>
-        <Button icon={Plus} onClick={() => setModalOpen(true)}>Register Artisan</Button>
+        <Button icon={Plus} onClick={() => setModalOpen(true)} disabled={!activeEvent.id}>Register Artisan</Button>
       </div>
+
+      {events.length === 0 && (
+        <Card className="text-sm text-burgundy/70">Create an event before registering vendors.</Card>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex gap-2.5 overflow-x-auto pb-2">
@@ -101,6 +115,7 @@ export default function VendorsPage() {
       {/* Add Vendor Modal */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Register Artisan">
         <form onSubmit={handleAdd} className="space-y-4">
+          {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">{error}</p>}
           <Input
             label="Agency / Artisan Name"
             placeholder="e.g. Royal Clarinet Orchestra"
@@ -143,7 +158,7 @@ export default function VendorsPage() {
           />
           <div className="pt-4 flex justify-end gap-3">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit">Commit Registration</Button>
+            <Button type="submit" loading={saving} disabled={saving}>Commit Registration</Button>
           </div>
         </form>
       </Modal>

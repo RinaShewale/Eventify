@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { useEventContext } from '../../context/EventContext';
+import { useRef, useEffect } from 'react';
+import { useEventContext } from '../../hooks/useEventContext';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 import gsap from 'gsap';
 

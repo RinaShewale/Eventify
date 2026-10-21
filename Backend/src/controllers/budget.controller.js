@@ -11,7 +11,8 @@ export const createBudget = async (req, res) => {
       photography,
       decoration,
       music,
-      other
+      other,
+      allocations
     } = req.body;
 
     const existingEvent = await Event.findOne({
@@ -43,7 +44,8 @@ export const createBudget = async (req, res) => {
       photography,
       decoration,
       music,
-      other
+      other,
+      allocations
     });
 
     res.status(201).json({

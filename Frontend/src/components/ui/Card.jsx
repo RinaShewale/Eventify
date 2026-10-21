@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 
 export default function Card({ children, className = '', hover = true, ...props }) {

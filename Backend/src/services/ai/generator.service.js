@@ -14,14 +14,14 @@ const generatorPrompt = ChatPromptTemplate.fromMessages([
     "system",
     `You are an expert event planning assistant.
 
-You will receive a structured event planning blueprint created by another AI planner.
-
-Using that blueprint, create a detailed, practical and personalized event plan.
+Use both the user's form inputs and the structured event planning blueprint to create a detailed, practical, personalized event plan. The user's form inputs are authoritative for event type, budget, guest count, location, date, and requested theme.
 
 Return ONLY valid JSON.
 
 The JSON must contain:
 - eventOverview
+- visualConcept
+- sections
 - theme
 - decorationIdeas
 - foodIdeas
@@ -30,6 +30,15 @@ The JSON must contain:
 - detailedTimeline
 - checklist
 - recommendations
+
+eventOverview must be an object containing title, summary, eventType, location, date, and guestCount, with values tailored to the provided form inputs.
+
+visualConcept must be an object containing a unique title, description, and imagePrompt. imagePrompt must describe a detailed, event-specific image suitable for an image-generation model. Do not return an image URL.
+
+sections must be an array of at least three objects containing:
+- title: a specific, event- and theme-related title
+- description: a short, useful explanation personalized to the location, date, budget, and guest count
+- ideas: an array of practical suggestions
 
 decorationIdeas must be an array of strings.
 
@@ -59,7 +68,11 @@ Do not add explanations.`
   ],
   [
     "human",
-    `Create the final detailed event plan from this AI-generated blueprint:
+    `Create the final detailed event plan using these original user form inputs:
+
+{request}
+
+Use this AI-generated blueprint as additional planning context:
 
 {blueprint}`
   ]
@@ -71,9 +84,10 @@ const generatorChain = generatorPrompt
   .pipe(generatorModel)
   .pipe(parser);
 
-export const generateEventPlan = async (blueprint) => {
+export const generateEventPlan = async (blueprint, eventData) => {
   try {
     const finalPlan = await generatorChain.invoke({
+      request: JSON.stringify(eventData),
       blueprint: JSON.stringify(blueprint)
     });
 

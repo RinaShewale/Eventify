@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useEventContext } from '../context/EventContext';
+import { useState } from 'react';
+import { useEventContext } from '../hooks/useEventContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -8,20 +8,30 @@ import ProgressBar from '../components/ui/ProgressBar';
 import { Plus } from 'lucide-react';
 
 export default function BudgetPage() {
-  const { activeEvent, budgetCategories, addBudgetItem } = useEventContext();
+  const { activeEvent, budgetCategories, addBudgetItem, events, dataLoading } = useEventContext();
   const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [newItem, setNewItem] = useState({ category: '', allocated: '', spent: '', notes: '' });
 
   const totalAllocated = budgetCategories.reduce((acc, c) => acc + Number(c.allocated), 0);
   const totalSpent = budgetCategories.reduce((acc, c) => acc + Number(c.spent), 0);
-  const remaining = activeEvent.totalBudget - totalSpent;
+  const remaining = Number(activeEvent.totalBudget || 0) - totalSpent;
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!newItem.category) return;
-    addBudgetItem(newItem);
-    setNewItem({ category: '', allocated: '', spent: '', notes: '' });
-    setModalOpen(false);
+    setSaving(true);
+    setError('');
+    try {
+      await addBudgetItem(newItem);
+      setNewItem({ category: '', allocated: '', spent: '', notes: '' });
+      setModalOpen(false);
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -33,8 +43,12 @@ export default function BudgetPage() {
             Precision financial discipline for {activeEvent.title}.
           </p>
         </div>
-        <Button icon={Plus} onClick={() => setModalOpen(true)}>Add Allocation</Button>
+        <Button icon={Plus} onClick={() => setModalOpen(true)} disabled={!activeEvent.id}>Add Allocation</Button>
       </div>
+
+      {!dataLoading && events.length === 0 && (
+        <Card className="text-sm text-burgundy/70">Create an event before managing its budget.</Card>
+      )}
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -92,6 +106,7 @@ export default function BudgetPage() {
       {/* Add Category Modal */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="New Allocation Ledger">
         <form onSubmit={handleAdd} className="space-y-4">
+          {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-xs text-red-800">{error}</p>}
           <Input
             label="Category Name"
             placeholder="e.g. Vintage Limousines"
@@ -122,7 +137,7 @@ export default function BudgetPage() {
           />
           <div className="pt-4 flex justify-end gap-3">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button type="submit">Commit Allocation</Button>
+            <Button type="submit" loading={saving} disabled={saving}>Commit Allocation</Button>
           </div>
         </form>
       </Modal>
