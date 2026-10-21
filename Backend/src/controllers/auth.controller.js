@@ -43,17 +43,8 @@ export const googleCallback = async (req, res) => {
       }
     );
 
-    res.json({
-      success: true,
-      message: "Google login successful",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar
-      }
-    });
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+    res.redirect(`${frontendUrl}/auth/callback#token=${encodeURIComponent(token)}`);
   } catch (error) {
     console.error("Google Callback Error:", error);
 
